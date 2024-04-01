@@ -1,4 +1,4 @@
-package com.example.sudoku_gen
+package sudoku_gen
 
 class GridIterator(private val grid: Grid) : Iterator<Cell> {
     private var row = 0
@@ -66,8 +66,6 @@ class Grid : Iterable<Cell> {
         gridValues[coord] = defaultValue(coord)
     }
 
-    fun emptyCells() = gridValues.values.filter { it.isEmpty() }
-
     fun copy(): Grid {
         return Grid(gridValues)
     }
@@ -75,36 +73,15 @@ class Grid : Iterable<Cell> {
     private fun defaultValue(coord: Coord) = Cell(coord = coord)
 
     fun isComplete() = this.all { !it.isEmpty() }
-
-    fun getValidValues(coord: Coord): List<Int> {
-        // TODO: must be a better way.
-        val validValues = mutableSetOf(1, 2, 3, 4, 5, 6, 7, 8, 9)
-
-        val cell = get(coord)
-
-        linkedCells(cell).forEach {
-            validValues.remove(it.value)
-        }
-
-        return validValues.toList()
-    }
-
-    private fun linkedCells(initialCell: Cell): Iterator<Cell> {
-        return LinkedCellsIterator(this, initialCell)
-    }
-
-    // for testing only.
-    fun clearCells(coords: List<Coord>) {
-        coords.forEach { coord ->
-            clearCell(coord)
-        }
-    }
 }
 
 fun Grid.legal(coord: Coord, value: Int): Boolean {
     for (index in 0..8) {
         val rowCoord = coord.copy(row = index)
         val colCoord = coord.copy(col = index)
+        if (rowCoord == colCoord && rowCoord == coord) {
+            continue
+        }
         if (this[rowCoord].value == value || this[colCoord].value == value) {
             return false
         }
@@ -116,9 +93,11 @@ fun Grid.legal(coord: Coord, value: Int): Boolean {
     for (row in boxRowStart until boxRowStart + 3) {
         for (col in boxColStart until boxColStart + 3) {
             val newCoord = coord.copy(row = row, col = col)
+            if (newCoord == coord) continue
             if (this[newCoord].value == value) return false
         }
     }
+
 
     return true
 }
@@ -138,6 +117,7 @@ fun Grid.nextCoord(currentCoord: Coord): Coord? {
 //        )
 //        else -> null
 //    }
+    // Row is consistently faster.
     return when {
         currentCoord.row < this.maxRow && currentCoord.col < this.maxCol -> currentCoord.copy(
             row = currentCoord.row + 1
@@ -181,6 +161,8 @@ fun Grid.print() {
     println()
 }
 
+val defaultSetOfNums = setOf(1,2,3,4,5,6,7,8,9)
+
 fun Grid.fillRandom(): Boolean {
     if (this.isComplete()) return true
 
@@ -189,7 +171,8 @@ fun Grid.fillRandom(): Boolean {
         if (!cell.isEmpty()) continue
 
         // random value is selected which is valid.
-        for (possibleValue in this.getValidValues(cell.coord).shuffled()) {
+        for (possibleValue in defaultSetOfNums.shuffled()) {
+            if (!this.legal(cell.coord, possibleValue)) continue
             // set cell value
             this[cell.coord] = Cell(coord = cell.coord, value = possibleValue)
             if (this.fillRandom()) {

@@ -1,6 +1,5 @@
-package com.example.sudoku_gen
+package sudoku_gen
 
-import kotlin.time.measureTime
 import kotlin.time.measureTimedValue
 
 fun main() {

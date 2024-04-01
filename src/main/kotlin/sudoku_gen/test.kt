@@ -1,8 +1,6 @@
-package com.example.sudoku_gen
+package sudoku_gen
 
 fun main() {
-
-
     val exampleGrids = listOf(
         // http://sudopedia.enjoysudoku.com/Invalid_Test_Cases.html#Not_Unique_.E2.80.94_2_Solutions
         // 3 solutions
