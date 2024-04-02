@@ -224,3 +224,12 @@ fun Grid.Companion.from(rawString: String): Grid {
 
     return Grid(gridValues)
 }
+
+fun Grid.getString(): String {
+    return this.joinToString("") { cell ->
+        when {
+            cell.isEmpty() -> "."
+            else -> cell.value.toString()
+        }
+    }
+}
