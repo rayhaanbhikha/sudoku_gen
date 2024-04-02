@@ -6,13 +6,13 @@ package sudoku_gen
 // (consider each 'hole' a possible starting point).
 // if no solution or more than 1 solution is found, consider it a failure.
 // put hole back.
-fun pokeHoles(grid: Grid, holes: Int): Pair<Grid, List<Cell>> {
+fun removeCells(grid: Grid, numOfCellsToRemove: Int): Pair<Grid, List<Cell>> {
     // TODO: Depending on number of holes requested (i.e. holes > 55)
     // we should start a few coroutines together.
     val gridWithEmptyCells = grid.copy()
     val cellsRemoved = mutableListOf<Cell>()
 
-    while(cellsRemoved.size < holes) {
+    while(cellsRemoved.size < numOfCellsToRemove) {
         val rowIndex = (0..gridWithEmptyCells.maxRow).random()
         val colIndex = (0..gridWithEmptyCells.maxCol).random()
         val coord = Coord(rowIndex, colIndex)
@@ -33,24 +33,4 @@ fun pokeHoles(grid: Grid, holes: Int): Pair<Grid, List<Cell>> {
     }
 
     return Pair(gridWithEmptyCells, cellsRemoved)
-}
-
-fun numberOfSolutions(grid: Grid, count: Int = 0, coord: Coord = Coord(0, 0)): Int {
-    var countVar = count
-    val nextCoord = grid.nextCoord(coord) ?: return (1 + countVar)
-
-    if (grid[coord].isNonEmpty()) return numberOfSolutions(grid, countVar, nextCoord)
-
-    for (value in 1..9) {
-        if (!grid.legal(coord, value)) continue
-
-        val newCell = Cell(coord = coord, value)
-        grid[newCell.coord] = newCell
-
-        countVar = numberOfSolutions(grid, countVar, nextCoord)
-        if (countVar > 1) return countVar
-    }
-    grid[coord] = Cell(coord = coord, value = 0)
-
-    return countVar
 }

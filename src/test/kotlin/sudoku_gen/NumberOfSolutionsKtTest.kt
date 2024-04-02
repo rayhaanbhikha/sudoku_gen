@@ -9,7 +9,7 @@ import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class HelpersKtTest {
+class NumberOfSolutionsKtTest {
 
     @Test
     fun pokeHoles() {

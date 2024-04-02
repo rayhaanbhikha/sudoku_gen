@@ -9,7 +9,7 @@ fun main() {
         val grid = Grid()
         grid.fillRandom()
 
-        val (_holedGrid, holes) = pokeHoles(grid, 55)
+        val (_holedGrid, holes) = removeCells(grid, 55)
         holedGrid = _holedGrid
 
         grid
